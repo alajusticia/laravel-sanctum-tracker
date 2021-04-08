@@ -78,7 +78,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
             // Get as much information as possible about the request
             $context = new RequestContext;
 
-            $this->forceFill([
+            $personalAccessToken->forceFill([
                 'user_agent' => $context->userAgent,
                 'ip' => $context->ip,
                 'device_type' => $context->parser()->getDeviceType(),
@@ -89,7 +89,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
 
             // If we have the IP geolocation data
             if ($context->ip()) {
-                $this->forceFill([
+                $personalAccessToken->forceFill([
                     'city' => $context->ip()->getCity(),
                     'region' => $context->ip()->getRegion(),
                     'country' => $context->ip()->getCountry(),
@@ -99,18 +99,17 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
                 if (method_exists($context->ip(), 'getCustomData') &&
                     $context->ip()->getCustomData()) {
 
-                    $this->ip_data = $context->ip()->getCustomData();
+                    $personalAccessToken->ip_data = $context->ip()->getCustomData();
                 }
             }
 
             // Set the expiration date
             if ($minutes = config('sanctum.expiration')) {
-                $this->expiresAt(Carbon::now()->addMinutes($minutes));
+                $personalAccessToken->expiresAt(Carbon::now()->addMinutes($minutes));
             }
-        });
 
-        static::created(function ($personalAccessToken) {
-            event(new PersonalAccessTokenCreated($personalAccessToken));
+            // Dispatch event
+            event(new PersonalAccessTokenCreated($personalAccessToken, $context));
         });
     }
 

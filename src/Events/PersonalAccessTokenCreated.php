@@ -3,6 +3,7 @@
 namespace ALajusticia\SanctumTracker\Events;
 
 use ALajusticia\SanctumTracker\Models\PersonalAccessToken;
+use ALajusticia\SanctumTracker\RequestContext;
 use Illuminate\Queue\SerializesModels;
 
 class PersonalAccessTokenCreated

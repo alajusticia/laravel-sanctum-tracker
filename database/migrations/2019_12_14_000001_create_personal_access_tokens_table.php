@@ -13,26 +13,23 @@ class CreatePersonalAccessTokensTable extends Migration
      */
     public function up()
     {
-        Schema::create('personal_access_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
-            $table->string('user_agent')->nullable();
-            $table->string('ip')->nullable();
-            $table->json('ip_data')->nullable();
-            $table->string('device_type')->nullable();
-            $table->string('device')->nullable();
-            $table->string('platform')->nullable();
-            $table->string('browser')->nullable();
-            $table->string('city')->nullable();
-            $table->string('region')->nullable();
-            $table->string('country')->nullable();
-            $table->string('token', 64)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamps();
-            $table->expirable('expires_at');
-            $table->softDeletes();
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->after('name', function ($table) {
+                $table->string('user_agent')->nullable();
+                $table->string('ip')->nullable();
+                $table->json('ip_data')->nullable();
+                $table->string('device_type')->nullable();
+                $table->string('device')->nullable();
+                $table->string('platform')->nullable();
+                $table->string('browser')->nullable();
+                $table->string('city')->nullable();
+                $table->string('region')->nullable();
+                $table->string('country')->nullable();
+            });
+            $table->after('updated_at', function ($table) {
+                $table->expirable('expires_at');
+                $table->softDeletes();
+            });
         });
     }
 
@@ -43,6 +40,21 @@ class CreatePersonalAccessTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('personal_access_tokens');
+        Schema::table('personal_access_tokens', function (Blueprint $table) {
+            $table->dropColumn([
+                'user_agent',
+                'ip',
+                'ip_data',
+                'device_type',
+                'device',
+                'platform',
+                'browser',
+                'city',
+                'region',
+                'country',
+                'expires_at',
+                'deleted_at',
+            ]);
+        });
     }
 }

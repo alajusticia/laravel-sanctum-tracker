@@ -43,6 +43,12 @@ Publish the configuration file (`config/sanctum_tracker.php`) with:
 php artisan vendor:publish --provider="ALajusticia\SanctumTracker\SanctumTrackerServiceProvider" --tag="config"
 ```
 
+Run the migrations to update the `personal_access_tokens` table:
+
+```bash
+php artisan migrate
+```
+
 ### Override default model
 
 This package comes with a custom model (`ALajusticia\SanctumTracker\Models\PersonalAccessToken`) that extends the default Sanctum model.

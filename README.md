@@ -15,8 +15,6 @@ It also provides a trait introducing convenient methods: `logout`, `logoutOthers
   * [Choose and install a user-agent parser](#choose-and-install-a-user-agent-parser)
   * [Add the trait to your user model (optional)](#add-the-trait-to-your-user-model-optional)
 * [Usage](#usage)
-* [Events](#events)
-  * [PersonalAccessTokenCreated](#personalaccesstokencreated)
 * [IP address lookup](#ip-address-lookup)
   * [Ip2Location Lite DB3](#ip2location-lite-db3)
   * [Custom provider](#custom-provider)
@@ -107,43 +105,6 @@ class User extends Authenticatable
 ## Usage
 
 Issue Sanctum tokens like you would normally do. The `PersonalAccessToken` model provided by this package will automatically be populated with the extra informations.
-
-## Events
-
-### PersonalAccessTokenCreated
-
-On a new login, you can listen to the `ALajusticia\SanctumTracker\Events\PersonalAccessTokenCreated` event.
-It has a `personalAccessToken` property containing the newly created `ALajusticia\SanctumTracker\Models\PersonalAccessToken` and a `context` property that receives a `ALajusticia\SanctumTracker\RequestContext` object containing all the informations collected on the request.
-
-Available properties:
-```php
-$this->context->userAgent; // The full, unparsed, User-Agent header
-$this->context->ip; // The IP address
-```
-
-Available methods:
-```php
-$this->context->parser(); // Returns the parser used to parse the User-Agent header
-$this->context->ip(); // Returns the IP address lookup provider
-```
-
-Available methods in the parser:
-```php
-$this->context->parser()->getDevice(); // The name of the device (MacBook...)
-$this->context->parser()->getDeviceType(); // The type of the device (desktop, mobile, tablet, phone...)
-$this->context->parser()->getPlatform(); // The name of the platform (macOS...)
-$this->context->parser()->getBrowser(); // The name of the browser (Chrome...)
-```
-
-Available methods in the IP address lookup provider:
-```php
-$this->context->ip()->getCountry(); // The name of the country
-$this->context->ip()->getRegion(); // The name of the region
-$this->context->ip()->getCity(); // The name of the city
-$this->context->ip()->getResult(); // The entire result of the API call as a Laravel collection
-
-// And all your custom methods in the case of a custom provider
-```
 
 ## IP address lookup
 
@@ -265,6 +226,43 @@ This event has an exception attribute containing the GuzzleHttp\Exception\Transf
 (see [Guzzle documentation](http://docs.guzzlephp.org/en/stable/quickstart.html#exceptions)).
 
 You can listen to this event to add your own logic.
+
+## Events
+
+### PersonalAccessTokenCreated
+
+On a new login, you can listen to the `ALajusticia\SanctumTracker\Events\PersonalAccessTokenCreated` event.
+It has a `personalAccessToken` property containing the newly created `ALajusticia\SanctumTracker\Models\PersonalAccessToken` and a `context` property that receives a `ALajusticia\SanctumTracker\RequestContext` object containing all the informations collected on the request.
+
+Available properties:
+```php
+$this->context->userAgent; // The full, unparsed, User-Agent header
+$this->context->ip; // The IP address
+```
+
+Available methods:
+```php
+$this->context->parser(); // Returns the parser used to parse the User-Agent header
+$this->context->ip(); // Returns the IP address lookup provider
+```
+
+Available methods in the parser:
+```php
+$this->context->parser()->getDevice(); // The name of the device (MacBook...)
+$this->context->parser()->getDeviceType(); // The type of the device (desktop, mobile, tablet, phone...)
+$this->context->parser()->getPlatform(); // The name of the platform (macOS...)
+$this->context->parser()->getBrowser(); // The name of the browser (Chrome...)
+```
+
+Available methods in the IP address lookup provider:
+```php
+$this->context->ip()->getCountry(); // The name of the country
+$this->context->ip()->getRegion(); // The name of the region
+$this->context->ip()->getCity(); // The name of the city
+$this->context->ip()->getResult(); // The entire result of the API call as a Laravel collection
+
+// And all your custom methods in the case of a custom provider
+```
 
 ## License
 

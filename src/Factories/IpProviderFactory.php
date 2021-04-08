@@ -1,12 +1,12 @@
 <?php
 
-namespace ALajusticia\AuthTracker\Factories;
+namespace ALajusticia\SanctumTracker\Factories;
 
-use ALajusticia\AuthTracker\Exceptions\CustomIpProviderException;
-use ALajusticia\AuthTracker\Exceptions\IpProviderException;
-use ALajusticia\AuthTracker\Interfaces\IpProvider;
-use ALajusticia\AuthTracker\IpProviders\Ip2LocationLite;
-use ALajusticia\AuthTracker\IpProviders\IpApi;
+use ALajusticia\SanctumTracker\Exceptions\CustomIpProviderException;
+use ALajusticia\SanctumTracker\Exceptions\IpProviderException;
+use ALajusticia\SanctumTracker\Interfaces\IpProvider;
+use ALajusticia\SanctumTracker\IpProviders\Ip2LocationLite;
+use ALajusticia\SanctumTracker\IpProviders\IpApi;
 use Illuminate\Support\Facades\App;
 
 class IpProviderFactory
@@ -21,7 +21,7 @@ class IpProviderFactory
     public static function build($name)
     {
         if (self::ipLookupEnabled()) {
-            $customProviders = config('auth_tracker.ip_lookup.custom_providers');
+            $customProviders = config('sanctum_tracker.ip_lookup.custom_providers');
 
             if ($customProviders && array_key_exists($name, $customProviders)) {
 
@@ -60,7 +60,7 @@ class IpProviderFactory
      */
     public static function ipLookupEnabled()
     {
-        return config('auth_tracker.ip_lookup.provider') &&
-            App::environment(config('auth_tracker.ip_lookup.environments'));
+        return config('sanctum_tracker.ip_lookup.provider') &&
+            App::environment(config('sanctum_tracker.ip_lookup.environments'));
     }
 }

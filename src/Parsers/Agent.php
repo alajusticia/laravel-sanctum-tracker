@@ -1,8 +1,8 @@
 <?php
 
-namespace ALajusticia\AuthTracker\Parsers;
+namespace ALajusticia\SanctumTracker\Parsers;
 
-use ALajusticia\AuthTracker\Interfaces\UserAgentParser;
+use ALajusticia\SanctumTracker\Interfaces\UserAgentParser;
 use Jenssegers\Agent\Agent as Parser;
 
 class Agent implements UserAgentParser

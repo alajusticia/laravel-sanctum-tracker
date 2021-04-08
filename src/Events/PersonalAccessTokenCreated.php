@@ -1,30 +1,38 @@
 <?php
 
-namespace ALajusticia\AuthTracker\Events;
+namespace ALajusticia\SanctumTracker\Events;
 
+use ALajusticia\SanctumTracker\Models\PersonalAccessToken;
 use Illuminate\Queue\SerializesModels;
-use Laravel\Sanctum\NewAccessToken;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class PersonalAccessTokenCreated
 {
     use SerializesModels;
 
     /**
-     * The newly created personal access token.
+     * The newly created PersonalAccessToken.
      *
      * @var PersonalAccessToken
      */
     public $personalAccessToken;
 
     /**
+     * Informations about the request (user agent, ip address...).
+     *
+     * @var RequestContext
+     */
+    public $context;
+
+    /**
      * Create a new event instance.
      *
-     * @param NewAccessToken $newAccessToken
+     * @param PersonalAccessToken $personalAccessToken
+     * @param RequestContext $context
      * @return void
      */
-    public function __construct(NewAccessToken $newAccessToken)
+    public function __construct(PersonalAccessToken $personalAccessToken, RequestContext $context)
     {
-        $this->personalAccessToken = $newAccessToken->accessToken;
+        $this->personalAccessToken = $personalAccessToken;
+        $this->context = $context;
     }
 }

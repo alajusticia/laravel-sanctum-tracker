@@ -1,9 +1,9 @@
 <?php
 
-namespace ALajusticia\AuthTracker\Factories;
+namespace ALajusticia\SanctumTracker\Factories;
 
-use ALajusticia\AuthTracker\Parsers\Agent;
-use ALajusticia\AuthTracker\Parsers\WhichBrowser;
+use ALajusticia\SanctumTracker\Parsers\Agent;
+use ALajusticia\SanctumTracker\Parsers\WhichBrowser;
 
 class ParserFactory
 {

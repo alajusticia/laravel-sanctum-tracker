@@ -1,8 +1,8 @@
 <?php
 
-namespace ALajusticia\AuthTracker\IpProviders;
+namespace ALajusticia\SanctumTracker\IpProviders;
 
-use ALajusticia\AuthTracker\Interfaces\IpProvider;
+use ALajusticia\SanctumTracker\Interfaces\IpProvider;
 use Illuminate\Support\Facades\DB;
 
 class Ip2LocationLite implements IpProvider
@@ -18,8 +18,8 @@ class Ip2LocationLite implements IpProvider
     public function __construct()
     {
         $table = filter_var(request()->ip(), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)
-                 ? config('auth_tracker.ip_lookup.ip2location.ipv6_table')
-                 : config('auth_tracker.ip_lookup.ip2location.ipv4_table');
+                 ? config('sanctum_tracker.ip_lookup.ip2location.ipv6_table')
+                 : config('sanctum_tracker.ip_lookup.ip2location.ipv4_table');
 
         $this->result = DB::table($table)
                           ->whereRaw('INET_ATON(?) <= ip_to', [request()->ip()])

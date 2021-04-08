@@ -1,8 +1,8 @@
 <?php
 
-namespace ALajusticia\AuthTracker\Tests\Database\Factories;
+namespace ALajusticia\SanctumTracker\Tests\Database\Factories;
 
-use ALajusticia\AuthTracker\Tests\User;
+use ALajusticia\SanctumTracker\Tests\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

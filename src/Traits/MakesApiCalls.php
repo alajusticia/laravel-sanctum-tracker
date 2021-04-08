@@ -1,8 +1,8 @@
 <?php
 
-namespace ALajusticia\AuthTracker\Traits;
+namespace ALajusticia\SanctumTracker\Traits;
 
-use ALajusticia\AuthTracker\Events\FailedApiCall;
+use ALajusticia\SanctumTracker\Events\FailedApiCall;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\TransferException;
 
@@ -26,7 +26,7 @@ trait MakesApiCalls
     public function __construct()
     {
         $this->httpClient = new Client([
-            'connect_timeout' => config('auth_tracker.ip_lookup.timeout'),
+            'connect_timeout' => config('sanctum_tracker.ip_lookup.timeout'),
         ]);
 
         $this->result = $this->makeApiCall();

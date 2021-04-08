@@ -1,93 +1,66 @@
-# Laravel Auth Tracker
+# Laravel Sanctum Tracker
 
-#### Track and manage sessions, Passport tokens and Sanctum tokens in Laravel.
+#### Track Sanctum tokens in Laravel.
 
-This package allows you to track separately each login (session or token), attaching informations by parsing the
-User-Agent and saving the IP address.
+This package allows you to track Sanctum tokens, attaching informations by parsing the User-Agent and saving the IP address.
 
 Using a supported provider or creating your own custom providers, you can collect even more informations with
 an IP address lookup to get, for example, the geolocation.
 
-You can revoke every single session/token or all at once.
-In case of sessions with remember tokens, every session has its own remember token.
-This way, you can revoke a session without affecting the others.
+It also provides a trait introducing convenient methods: `logout`, `logoutOthers` and `logoutAll` for your user model.
 
 * [Compatibility](#compatibility)
 * [Installation](#installation)
-  * [Create the logins table](#create-the-logins-table)
-  * [Prepare your authenticatable models](#prepare-your-authenticatable-models)
+  * [Override default model](#override-default-model)
   * [Choose and install a user-agent parser](#choose-and-install-a-user-agent-parser)
-  * [Configure the user provider (optional)](#configure-the-user-provider-optional)
-  * [Laravel Sanctum](#laravel-sanctum)
+  * [Add the trait to your user model (optional)](#add-the-trait-to-your-user-model-optional)
 * [Usage](#usage)
-  * [Retrieving the logins](#retrieving-the-logins)
-    * [Get all the logins](#get-all-the-logins)
-    * [Get the current login](#get-the-current-login)
-  * [Check for the current login](#check-for-the-current-login)
-  * [Revoking logins](#revoking-logins)
-    * [Revoke a specific login](#revoke-a-specific-login)
-    * [Revoke all the logins](#revoke-all-the-logins)
-    * [Revoke all the logins except the current one](#revoke-all-the-logins-except-the-current-one)
 * [Events](#events)
-  * [Login](#login)
+  * [PersonalAccessTokenCreated](#personalaccesstokencreated)
 * [IP address lookup](#ip-address-lookup)
   * [Ip2Location Lite DB3](#ip2location-lite-db3)
   * [Custom provider](#custom-provider)
   * [Handle API errors](#handle-api-errors)
-* [Blade directives](#blade-directives)
+* [Events](#events)
+  * [PersonalAccessTokenCreated](#personalaccesstokencreated)
 * [License](#license)
 
 ## Compatibility
 
-- The v3 of this package has been tested with **Laravel 8.x**.
-
-- For previous versions of Laravel (v5.8, v6 and v7), use the v2.
-
-- It works with all the session drivers supported by Laravel, except of course the cookie driver which saves
-the sessions only in the client browser and the array driver.
-
-- To track API tokens, it supports the official **Laravel Passport (>= 7.5)** and **Laravel Sanctum (v2)** packages.
+- This package has been tested with **Laravel 8.x** and **Laravel Sanctum (v2)**.
 
 ## Installation
 
 Install the package with composer:
 
 ```bash
-composer require alajusticia/laravel-auth-tracker
+composer require alajusticia/laravel-sanctum-tracker
 ```
 
-Publish the configuration file (`config/auth_tracker.php`) with:
+Publish the configuration file (`config/sanctum_tracker.php`) with:
 
 ```bash
-php artisan vendor:publish --provider="ALajusticia\AuthTracker\AuthTrackerServiceProvider" --tag="config"
+php artisan vendor:publish --provider="ALajusticia\SanctumTracker\SanctumTrackerServiceProvider" --tag="config"
 ```
 
-### Create the logins table
+### Override default model
 
-Before running the migrations, you can change the name of the table that will be used to save the logins
-(named by default `logins`) with the `table_name` option of the configuration file.
+This package comes with a custom model (`ALajusticia\SanctumTracker\Models\PersonalAccessToken`) that extends the default Sanctum model.
 
-Launch the database migrations to create the required table:
-
-```bash
-php artisan migrate
-```
-
-### Prepare your authenticatable models
-
-In order to track the logins of your app's users, add the `ALajusticia\AuthTracker\Traits\AuthTracking` trait
-on each of your authenticatable models that you want to track:
+Instruct Sanctum to use this custom model via the `usePersonalAccessTokenModel` method provided by Sanctum. Typically, you should call this method in the `boot` method of one of your application's service providers:
 
 ```php
-use ALajusticia\AuthTracker\Traits\AuthTracking;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-// ...
+use ALajusticia\SanctumTracker\Models\PersonalAccessToken;
+use Laravel\Sanctum\Sanctum;
 
-class User extends Authenticatable
+/**
+ * Bootstrap any application services.
+ *
+ * @return void
+ */
+public function boot()
 {
-    use AuthTracking;
-
-    // ...
+    Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
 }
 ```
 
@@ -99,153 +72,56 @@ Currently, it supports two of the most popular parsers:
 - WhichBrowser ([https://github.com/WhichBrowser/Parser-PHP](https://github.com/WhichBrowser/Parser-PHP))
 - Agent ([https://github.com/jenssegers/agent](https://github.com/jenssegers/agent))
 
-Before using the Auth Tracker, you need to choose a supported parser, install it and indicate in the configuration file which one you want
+Before using the Sanctum Tracker, you need to choose a supported parser, install it and indicate in the configuration file which one you want
 to use.
 
-### Configure the user provider (optional)
+### Add the trait to your user model (optional)
 
-This step is optional if your application has only stateless authentication.
+This package provides a `ALajusticia\SanctumTracker\Traits\SanctumTracked` trait
+that can be used on your user model to quickly revoke Sanctum tokens.
 
-If you want to use the Auth Tracker for stateful authentication, this package comes with a modified Eloquent user provider that retrieve 
-remembered users from the logins table instead of the users table.
+It introduces convenient methods:
 
-In your `config/auth.php` configuration file, use the `eloquent-tracked` driver in the user providers list for the users you want to track:
+- `logout`: to revoke the current token or a specific token by passing its ID in parameter
+- `logoutOthers`: to revoke all the tokens, except the current one
+- `logoutAll`: to revoke all the tokens, including the current on
 
 ```php
-'providers' => [
-    'users' => [
-        'driver' => 'eloquent-tracked',
-        'model' => App\Models\User::class,
-    ],
-    
+use ALajusticia\SanctumTracker\Traits\SanctumTracked;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
+{
+    use SanctumTracked;
+
     // ...
-],
-```
-
-### Laravel Sanctum
-
-In the actual version (2.9) of the Laravel Sanctum package, there is no event allowing us to know when
-an API token is created.
-
-If you are issuing API tokens with Laravel Sanctum and want to enable auth tracking,
-you will have to dispatch an event provided by the Auth Tracker.
-
-Dispatch the `ALajusticia\AuthTracker\Events\PersonalAccessTokenCreated` event passing the personal access token
-newly created by the `createToken` method of the Laravel Sanctum trait.
-
-Based on the [example](https://laravel.com/docs/8.x/sanctum#issuing-mobile-api-tokens) provided by
-the Laravel Sanctum documentation, it might look like this:
-
-```php
-use ALajusticia\AuthTracker\Events\PersonalAccessTokenCreated;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-
-Route::post('/sanctum/token', function (Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-        'device_name' => 'required',
-    ]);
-
-    $user = User::where('email', $request->email)->first();
-
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials are incorrect.'],
-        ]);
-    }
-
-    $personalAccessToken = $user->createToken($request->device_name);
-    
-    event(new PersonalAccessTokenCreated($personalAccessToken)); // Dispatch here the event
-
-    return $personalAccessToken->plainTextToken;
-});
+}
 ```
 
 ## Usage
 
-The `AuthTracking` trait provided by this package surcharge your users models with methods to list their logins and to
-give you full individual control on them.
-
-### Retrieving the logins
-
-#### Get all the logins
-
-```php
-$logins = request()->user()->logins;
-```
-
-#### Get the current login
-
-```php
-$login = request()->user()->currentLogin();
-```
-
-### Check for the current login
-
-Each login instance comes with a dynamic `is_current` attribute.
-It's a boolean that indicates if the login instance is the current login.
-
-### Revoking logins
-
-#### Revoke a specific login
-
-To revoke a specific login, use the `logout` method with the ID of the login you want to revoke.
-If no parameter is given, the current login will be revoked.
-
-```php
-request()->user()->logout(1); // Revoke the login where id=1
-```
-
-```php
-request()->user()->logout(); // Revoke the current login
-```
-
-#### Revoke all the logins
-
-We can destroy all the sessions and revoke all the Passport tokens by using the `logoutAll` method.
-Useful when, for example, the user's password is modified and we want to logout all the devices.
-
-This feature destroys all sessions, even those remembered.
-
-```php
-request()->user()->logoutAll();
-```
-
-#### Revoke all the logins except the current one
-
-The `logoutOthers` method acts in the same way as the `logoutAll` method except that it keeps the current
-session / Passport token alive.
-
-```php
-request()->user()->logoutOthers();
-```
+Issue Sanctum tokens like you would normally do. The `PersonalAccessToken` model provided by this package will automatically be populated with the extra informations.
 
 ## Events
 
-### Login
+### PersonalAccessTokenCreated
 
-On a new login, you can listen to the event `ALajusticia\AuthTracker\Events\Login`.
-It receives a `RequestContext` object containing all the informations collected on the request, accessible on the event
-with the `context` property.
+On a new login, you can listen to the `ALajusticia\SanctumTracker\Events\PersonalAccessTokenCreated` event.
+It has a `personalAccessToken` property containing the newly created `ALajusticia\SanctumTracker\Models\PersonalAccessToken` and a `context` property that receives a `ALajusticia\SanctumTracker\RequestContext` object containing all the informations collected on the request.
 
-Properties available:
+Available properties:
 ```php
 $this->context->userAgent; // The full, unparsed, User-Agent header
 $this->context->ip; // The IP address
 ```
 
-Methods available:
+Available methods:
 ```php
 $this->context->parser(); // Returns the parser used to parse the User-Agent header
 $this->context->ip(); // Returns the IP address lookup provider
 ```
 
-Methods available in the parser:
+Available methods in the parser:
 ```php
 $this->context->parser()->getDevice(); // The name of the device (MacBook...)
 $this->context->parser()->getDeviceType(); // The type of the device (desktop, mobile, tablet, phone...)
@@ -253,7 +129,7 @@ $this->context->parser()->getPlatform(); // The name of the platform (macOS...)
 $this->context->parser()->getBrowser(); // The name of the browser (Chrome...)
 ```
 
-Methods available in the IP address lookup provider:
+Available methods in the IP address lookup provider:
 ```php
 $this->context->ip()->getCountry(); // The name of the country
 $this->context->ip()->getRegion(); // The name of the region
@@ -265,14 +141,14 @@ $this->context->ip()->getResult(); // The entire result of the API call as a Lar
 
 ## IP address lookup
 
-By default, the Auth Tracker collects the IP address and the informations given by the User-Agent header.
+By default, the Sanctum Tracker collects the IP address and the informations given by the User-Agent header.
 
 But you can go even further and collect other informations about the IP address, like the geolocation.
 
 To do so, you first have to enable the IP lookup feature in the configuration file.
 
 This package comes with two officially supported providers for IP address lookup
-(see the IP Address Lookup section in the `config/auth_tracker.php` configuration file).
+(see the IP Address Lookup section in the `config/sanctum_tracker.php` configuration file).
 
 ### Ip2Location Lite DB3
 
@@ -283,24 +159,24 @@ Here are the steps to enable and use it:
 - Download the current version of the database and import it in your database as explained in the documentation:
 [https://lite.ip2location.com/database/ip-country-region-city](https://lite.ip2location.com/database/ip-country-region-city)
 
-- Set the name of the `ip_lookup.provider` option to `ip2location-lite` in the `config/auth_tracker.php` configuration file
+- Set the name of the `ip_lookup.provider` option to `ip2location-lite` in the `config/sanctum_tracker.php` configuration file
 
-- Indicate the name of the tables used in your database for IPv4 and IPv6 in the `config/auth_tracker.php` configuration file
+- Indicate the name of the tables used in your database for IPv4 and IPv6 in the `config/sanctum_tracker.php` configuration file
 (by default it uses the same names as the documentation: `ip2location_db3` and `ip2location_db3_ipv6`)
 
 ### Custom provider
 
 You can add your own providers by creating a class that implements the
-`ALajusticia\AuthTracker\Interfaces\IpProvider` interface and use the
-`ALajusticia\AuthTracker\Traits\MakesApiCalls` trait.
+`ALajusticia\SanctumTracker\Interfaces\IpProvider` interface and use the
+`ALajusticia\SanctumTracker\Traits\MakesApiCalls` trait.
 
 Your custom class have to be registered in the `custom_providers` array of the configuration file.
 
 Let's see an example of an IP lookup provider with the built-in `IpApi` provider:
 
 ```php
-use ALajusticia\AuthTracker\Interfaces\IpProvider;
-use ALajusticia\AuthTracker\Traits\MakesApiCalls;
+use ALajusticia\SanctumTracker\Interfaces\IpProvider;
+use ALajusticia\SanctumTracker\Traits\MakesApiCalls;
 use GuzzleHttp\Psr7\Request;
 
 class IpApi implements IpProvider
@@ -383,24 +259,6 @@ This event has an exception attribute containing the GuzzleHttp\Exception\Transf
 (see [Guzzle documentation](http://docs.guzzlephp.org/en/stable/quickstart.html#exceptions)).
 
 You can listen to this event to add your own logic.
-
-## Blade directives
-
-Check if the auth tracking is enabled for the current user:
-
-```php
-@tracked
-    <a href="{{ route('login.list') }}">Security</a>
-@endtracked
-```
-
-Check if the IP lookup feature is enabled:
-
-```php
-@ipLookup
-    {{ $login->location }}
-@endipLookup
-```
 
 ## License
 

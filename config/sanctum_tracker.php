@@ -4,31 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Table Name
-    |--------------------------------------------------------------------------
-    |
-    | Use this option to customize the name of the table used to save the
-    | logins in the database.
-    |
-    */
-
-    'table_name' => 'logins',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Remember Lifetime
-    |--------------------------------------------------------------------------
-    |
-    | Here you can specify the lifetime of the remember tokens.
-    |
-    | Must be an integer representing the number of days.
-    |
-    */
-
-    'remember_lifetime' => 365, // 1 year
-
-    /*
-    |--------------------------------------------------------------------------
     | Parser
     |--------------------------------------------------------------------------
     |
@@ -87,7 +62,7 @@ return [
         | to the provider's API.
         |
         | If the request takes more time, the IP address lookup will be ignored
-        | and the ALajusticia\AuthTracker\Events\FailedApiCall will be
+        | and the ALajusticia\SanctumTracker\Events\FailedApiCall will be
         | dispatched, receiving the attribute $exception containing the
         | GuzzleHttp\Exception\TransferException.
         |

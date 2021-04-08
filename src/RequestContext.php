@@ -1,11 +1,11 @@
 <?php
 
-namespace ALajusticia\AuthTracker;
+namespace ALajusticia\SanctumTracker;
 
-use ALajusticia\AuthTracker\Factories\IpProviderFactory;
-use ALajusticia\AuthTracker\Factories\ParserFactory;
-use ALajusticia\AuthTracker\Interfaces\IpProvider;
-use ALajusticia\AuthTracker\Interfaces\UserAgentParser;
+use ALajusticia\SanctumTracker\Factories\IpProviderFactory;
+use ALajusticia\SanctumTracker\Factories\ParserFactory;
+use ALajusticia\SanctumTracker\Interfaces\IpProvider;
+use ALajusticia\SanctumTracker\Interfaces\UserAgentParser;
 
 class RequestContext
 {
@@ -37,10 +37,10 @@ class RequestContext
     public function __construct()
     {
         // Initialize the parser
-        $this->parser = ParserFactory::build(config('auth_tracker.parser'));
+        $this->parser = ParserFactory::build(config('sanctum_tracker.parser'));
 
         // Initialize the IP provider
-        $this->ipProvider = IpProviderFactory::build(config('auth_tracker.ip_lookup.provider'));
+        $this->ipProvider = IpProviderFactory::build(config('sanctum_tracker.ip_lookup.provider'));
 
         $this->userAgent = request()->userAgent();
         $this->ip = request()->ip();

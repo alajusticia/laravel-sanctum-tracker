@@ -88,7 +88,7 @@ It introduces convenient methods:
 
 - `logout`: to revoke the current token or a specific token by passing its ID in parameter
 - `logoutOthers`: to revoke all the tokens, except the current one
-- `logoutAll`: to revoke all the tokens, including the current on
+- `logoutAll`: to revoke all the tokens, including the current one
 
 ```php
 use ALajusticia\SanctumTracker\Traits\SanctumTracked;

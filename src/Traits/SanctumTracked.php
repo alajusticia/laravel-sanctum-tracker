@@ -2,43 +2,38 @@
 
 namespace ALajusticia\SanctumTracker\Traits;
 
-use Illuminate\Database\Eloquent\Builder;
-
 trait SanctumTracked
 {
     /**
      * Revoke an access token by its ID.
      *
-     * @param int|null $personalAccessTokenId
+     * @param mixed $personalAccessTokenId
      * @return bool
-     * @throws \Exception
      */
     public function logout($personalAccessTokenId = null)
     {
-        $personalAccessToken = $personalAccessTokenId ? $this->tokens()->where('id', $personalAccessTokenId) : $this->currentAccessToken();
+        $personalAccessToken = $personalAccessTokenId ? $this->tokens()->find($personalAccessTokenId) : $this->currentAccessToken();
 
-        return $personalAccessToken ? (!empty($personalAccessToken->delete())) : false;
+        return $personalAccessToken ? !empty($personalAccessToken->delete()) : false;
     }
 
     /**
      * Revoke all access tokens, except the current one.
      *
-     * @return mixed
+     * @return bool
      */
     public function logoutOthers()
     {
-        $personalAccessTokens = $this->currentAccessToken() ? $this->tokens()->where('id', '<>', $this->currentAccessToken()->id) : null;
-
-        return $personalAccessTokens ? (!empty($personalAccessTokens->delete())) : false;
+        return $this->currentAccessToken() ? !empty($this->tokens()->where('id', '<>', $this->currentAccessToken()->id)->delete()) : false;
     }
 
     /**
-     * Destroy all sessions / Revoke all access tokens.
+     * Revoke all access tokens.
      *
-     * @return mixed
+     * @return bool
      */
     public function logoutAll()
     {
-        return $this->tokens()->delete();
+        return !empty($this->tokens()->delete());
     }
 }

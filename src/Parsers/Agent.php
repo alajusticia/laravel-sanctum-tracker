@@ -21,7 +21,9 @@ class Agent implements UserAgentParser
      */
     public function getDevice()
     {
-        return $this->parser->device();
+        $device = $this->parser->device();
+
+        return $device && $device !== 'WebKit' ? $device : null;
     }
 
     /**
@@ -34,7 +36,7 @@ class Agent implements UserAgentParser
         if ($this->parser->isDesktop()) {
             return 'desktop';
         } elseif ($this->parser->isMobile()) {
-            return $this->parser->isTablet() ? 'tablet' : $this->parser->isPhone() ? 'phone' : 'mobile';
+            return $this->parser->isTablet() ? 'tablet' : ($this->parser->isPhone() ? 'phone' : 'mobile');
         }
 
         return null;
@@ -47,7 +49,7 @@ class Agent implements UserAgentParser
      */
     public function getPlatform()
     {
-        return $this->parser->platform();
+        return $this->parser->platform() ?: null;
     }
 
     /**
@@ -57,6 +59,6 @@ class Agent implements UserAgentParser
      */
     public function getBrowser()
     {
-        return $this->parser->browser();
+        return $this->parser->browser() ?: null;
     }
 }

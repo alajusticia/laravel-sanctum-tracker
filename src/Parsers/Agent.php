@@ -32,13 +32,9 @@ class Agent implements UserAgentParser
     public function getDeviceType()
     {
         if ($this->parser->isDesktop()) {
-            return 'Desktop';
-        } elseif ($this->parser->isTablet()) {
-            return 'Tablet';
-        } elseif ($this->parser->isPhone()) {
-            return 'Phone';
-        } else if ($this->parser->isMobile()) {
-            return 'Mobile';
+            return 'desktop';
+        } elseif ($this->parser->isMobile()) {
+            return $this->parser->isTablet() ? 'tablet' : $this->parser->isPhone() ? 'phone' : 'mobile';
         }
 
         return null;

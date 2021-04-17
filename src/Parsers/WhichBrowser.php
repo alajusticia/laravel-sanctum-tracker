@@ -21,9 +21,12 @@ class WhichBrowser implements UserAgentParser
      */
     public function getDevice()
     {
-        return ! empty($this->parser->device->toString()) ?
-            $this->parser->device->toString() :
-            $this->parser->device->getManufacturer().' '.$this->parser->device->getModel();
+        return trim($this->parser->device->toString()) ?: $this->getDeviceByManufacturerAndModel();
+    }
+
+    protected function getDeviceByManufacturerAndModel()
+    {
+        return trim($this->parser->device->getManufacturer().' '.$this->parser->device->getModel()) ?: null;
     }
 
     /**
@@ -33,7 +36,7 @@ class WhichBrowser implements UserAgentParser
      */
     public function getDeviceType()
     {
-        return ucfirst($this->parser->device->type);
+        return trim($this->parser->device->type) ?: null;
     }
 
     /**
@@ -43,7 +46,7 @@ class WhichBrowser implements UserAgentParser
      */
     public function getPlatform()
     {
-        return $this->parser->os->toString();
+        return trim($this->parser->os->toString()) ?: null;
     }
 
     /**

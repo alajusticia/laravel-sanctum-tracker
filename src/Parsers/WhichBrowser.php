@@ -3,6 +3,7 @@
 namespace ALajusticia\SanctumTracker\Parsers;
 
 use ALajusticia\SanctumTracker\Interfaces\UserAgentParser;
+use Illuminate\Support\Facades\Request;
 use WhichBrowser\Parser;
 
 class WhichBrowser implements UserAgentParser
@@ -11,7 +12,7 @@ class WhichBrowser implements UserAgentParser
 
     public function __construct()
     {
-        $this->parser = new Parser(request()->userAgent());
+        $this->parser = new Parser(Request::userAgent());
     }
 
     /**

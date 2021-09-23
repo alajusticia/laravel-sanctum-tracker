@@ -7,6 +7,7 @@ use ALajusticia\SanctumTracker\RequestContext;
 use ALajusticia\Expirable\Traits\Expirable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Request;
 use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
 class PersonalAccessToken extends SanctumPersonalAccessToken
@@ -136,6 +137,6 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
      */
     public function getIsCurrentAttribute()
     {
-        return $this->id === request()->user()->currentAccessToken()->id;
+        return $this->id === Request::user()->currentAccessToken()->id;
     }
 }

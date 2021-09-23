@@ -144,7 +144,8 @@ Let's see an example of an IP lookup provider with the built-in `IpApi` provider
 ```php
 use ALajusticia\SanctumTracker\Interfaces\IpProvider;
 use ALajusticia\SanctumTracker\Traits\MakesApiCalls;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use Illuminate\Support\Facades\Request;
 
 class IpApi implements IpProvider
 {
@@ -153,11 +154,11 @@ class IpApi implements IpProvider
     /**
      * Get the Guzzle request.
      *
-     * @return Request
+     * @return GuzzleRequest
      */
     public function getRequest()
     {
-        return new Request('GET', 'http://ip-api.com/json/'.request()->ip().'?fields=25');
+        return new GuzzleRequest('GET', 'http://ip-api.com/json/'.Request::ip().'?fields=25');
     }
 
     /**

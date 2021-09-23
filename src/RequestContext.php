@@ -6,6 +6,7 @@ use ALajusticia\SanctumTracker\Factories\IpProviderFactory;
 use ALajusticia\SanctumTracker\Factories\ParserFactory;
 use ALajusticia\SanctumTracker\Interfaces\IpProvider;
 use ALajusticia\SanctumTracker\Interfaces\UserAgentParser;
+use Illuminate\Support\Facades\Request;
 
 class RequestContext
 {
@@ -42,8 +43,8 @@ class RequestContext
         // Initialize the IP provider
         $this->ipProvider = IpProviderFactory::build(config('sanctum_tracker.ip_lookup.provider'));
 
-        $this->userAgent = request()->userAgent();
-        $this->ip = request()->ip();
+        $this->userAgent = Request::userAgent();
+        $this->ip = Request::ip();
     }
 
     /**

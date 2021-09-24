@@ -7,8 +7,14 @@ use Jenssegers\Agent\Agent as Parser;
 
 class Agent implements UserAgentParser
 {
+    /**
+     * @var Parser
+     */
     protected $parser;
 
+    /**
+     * Agent constructor.
+     */
     public function __construct()
     {
         $this->parser = new Parser();
@@ -17,7 +23,7 @@ class Agent implements UserAgentParser
     /**
      * Get the device name.
      *
-     * @return string
+     * @return string|null
      */
     public function getDevice()
     {
@@ -29,7 +35,7 @@ class Agent implements UserAgentParser
     /**
      * Get the device type.
      *
-     * @return string
+     * @return string|null
      */
     public function getDeviceType()
     {
@@ -45,7 +51,7 @@ class Agent implements UserAgentParser
     /**
      * Get the platform name.
      *
-     * @return string
+     * @return string|null
      */
     public function getPlatform()
     {
@@ -55,7 +61,7 @@ class Agent implements UserAgentParser
     /**
      * Get the browser name.
      *
-     * @return string
+     * @return string|null
      */
     public function getBrowser()
     {

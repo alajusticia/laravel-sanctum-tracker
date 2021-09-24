@@ -8,8 +8,14 @@ use WhichBrowser\Parser;
 
 class WhichBrowser implements UserAgentParser
 {
+    /**
+     * @var Parser
+     */
     protected $parser;
 
+    /**
+     * WhichBrowser constructor.
+     */
     public function __construct()
     {
         $this->parser = new Parser(Request::userAgent());
@@ -18,13 +24,18 @@ class WhichBrowser implements UserAgentParser
     /**
      * Get the device name.
      *
-     * @return string
+     * @return string|null
      */
     public function getDevice()
     {
         return trim($this->parser->device->toString()) ?: $this->getDeviceByManufacturerAndModel();
     }
 
+    /**
+     * Get the device name by manufacturer and model.
+     *
+     * @return string|null
+     */
     protected function getDeviceByManufacturerAndModel()
     {
         return trim($this->parser->device->getManufacturer().' '.$this->parser->device->getModel()) ?: null;
@@ -33,7 +44,7 @@ class WhichBrowser implements UserAgentParser
     /**
      * Get the device type.
      *
-     * @return string
+     * @return string|null
      */
     public function getDeviceType()
     {
@@ -43,7 +54,7 @@ class WhichBrowser implements UserAgentParser
     /**
      * Get the platform name.
      *
-     * @return string
+     * @return string|null
      */
     public function getPlatform()
     {

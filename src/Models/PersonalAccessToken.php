@@ -138,6 +138,6 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
      */
     public function getIsCurrentAttribute()
     {
-        return $this->id === Request::user()->currentAccessToken()->id;
+        return $this->id === Request::user()?->currentAccessToken()?->id;
     }
 }

@@ -33,6 +33,7 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
      */
     protected $casts = [
         'abilities' => 'json',
+        'ip_data' => 'json',
         'expires_at' => 'datetime',
         'last_used_at' => 'datetime',
     ];
@@ -137,6 +138,6 @@ class PersonalAccessToken extends SanctumPersonalAccessToken
      */
     public function getIsCurrentAttribute()
     {
-        return $this->id === Request::user()->currentAccessToken()->id;
+        return $this->id === Request::user()?->currentAccessToken()?->id;
     }
 }

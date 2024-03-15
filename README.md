@@ -1,5 +1,7 @@
 # Laravel Sanctum Tracker
 
+> ⚠️ This package is now archived. Use [Laravel Logins](https://github.com/alajusticia/laravel-logins) instead.
+
 #### Track Sanctum tokens in Laravel.
 
 This package allows you to track Sanctum tokens, attaching informations by parsing the User-Agent and saving the IP address.
@@ -25,7 +27,9 @@ It also provides a trait introducing convenient methods: `logout`, `logoutOthers
 
 ## Compatibility
 
-- This package has been tested with **Laravel 8.x** and **Laravel Sanctum (v2)**.
+For recent Laravel versions, use [Laravel Logins](https://github.com/alajusticia/laravel-logins).
+
+This package has been tested with **Laravel 8.x** and **Laravel Sanctum (v2)**.
 
 ## Installation
 
